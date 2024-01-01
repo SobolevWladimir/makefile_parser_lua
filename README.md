@@ -1,2 +1,2 @@
 # makefile_parser_lua
-parser makefile to syntac  tree 
+parser makefile to syntax  tree 
