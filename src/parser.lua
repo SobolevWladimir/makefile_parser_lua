@@ -8,9 +8,14 @@ local M           = {
 
 local token_types = require('src.token_types')
 function M.parse(text)
-  local linter        = require('src.linter');
-  M.tokens            = linter.parse(text)
-  local currentTarget = nil;
+  M.currentPosition     = 0;
+  M.variables           = {};
+  M.special_target_name = {};
+  M.targets             = {};
+  M.tokens              = {}
+  local linter          = require('src.linter');
+  M.tokens              = linter.parse(text)
+  local currentTarget   = nil;
   while not M.isEnd() do
     local token = M.getCurrentToken()
     if token == nil then
