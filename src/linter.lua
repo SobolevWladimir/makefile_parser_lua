@@ -144,6 +144,9 @@ function M.readSpecialTargetName()
         text = text .. M.getCurrentSymbol();
       end
     else
+      if M.isComment() then
+        break
+      end
       command = command .. M.getCurrentSymbol()
     end
     local nextSymbol = string.sub(M.text, M.position + 1, M.position + 1)
@@ -156,6 +159,54 @@ function M.readSpecialTargetName()
   if command then
     result.command = string.gsub(command, "^%s*(.-)%s*$", "%1")
     -- result.command = command
+  else
+    result.command = ""
+  end
+  return result
+end
+
+function M.isTarget()
+  local endPos = string.len(M.text) - M.position;
+  for pos = M.position, endPos do
+    local symbol = string.sub(M.text, pos, pos)
+    if M.symbolIsNewLine(symbol) then
+      return false
+    end
+    if symbol == ":" then
+      return true
+    end
+  end
+  return false;
+end
+
+function M.readTarget()
+  local row           = M.row
+  local column        = M.column
+  local text          = ""
+  local isName        = true;
+  local prerequisites = "";
+  while not M.isEnd() do
+    if isName then
+      if M.getCurrentSymbol() == ':' then
+        isName = false
+      else
+        text = text .. M.getCurrentSymbol();
+      end
+    else
+      if M.isComment() then
+        break
+      end
+      prerequisites = prerequisites .. M.getCurrentSymbol()
+    end
+    local nextSymbol = string.sub(M.text, M.position + 1, M.position + 1)
+    if M.symbolIsNewLine(nextSymbol) then
+      break
+    end
+    M.nextSymbol()
+  end
+  local result = token_types.createToken(token_types.SPECIAL_TARGET_NAME, text:gsub("%s+", ""), row, column)
+  if command then
+    result.prerequisites = string.gsub(prerequisites, "^%s*(.-)%s*$", "%1")
   else
     result.command = ""
   end
