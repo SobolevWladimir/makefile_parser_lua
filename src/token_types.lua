@@ -1,9 +1,10 @@
 local M = {
-  TARGET        = 'target',
-  COMMAND       = 'command',
-  PREREQUISITES = 'prerequisites',
-  RECIPE        = 'recipe',
-  VARIABLE      = 'variable'
+  TARGET              = 'target',
+  COMMAND             = 'command',
+  PREREQUISITES       = 'prerequisites',
+  RECIPE              = 'recipe',
+  VARIABLE            = 'variable',
+  SPECIAL_TARGET_NAME = "special_target_name"
 }
 
 function M.createToken(type, value, row, column)

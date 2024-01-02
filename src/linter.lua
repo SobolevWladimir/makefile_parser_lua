@@ -25,6 +25,10 @@ end
 
 function M.readNext()
   while not M.isEnd() do
+    if M.isSpecialTargetName() then
+      return M.readSpecialTargetName()
+    end
+
     if M.isComment() then
       return M.readComment();
     end
@@ -115,6 +119,47 @@ function M.readRecipe()
     M.nextSymbol()
   end
   return token_types.createToken(token_types.RECIPE, text, row, column)
+end
+
+function M.isSpecialTargetName()
+  local currentSymbol = M.getCurrentSymbol();
+  if currentSymbol == '.' then
+    return true;
+  end
+  return false
+end
+
+function M.readSpecialTargetName()
+  M.nextSymbol();
+  local row     = M.row
+  local column  = M.column
+  local text    = ""
+  local isName  = true;
+  local command = "";
+  while not M.isEnd() do
+    if isName then
+      if M.getCurrentSymbol() == ':' or M.getCurrentSymbol() == '=' then
+        isName = false
+      else
+        text = text .. M.getCurrentSymbol();
+      end
+    else
+      command = command .. M.getCurrentSymbol()
+    end
+    local nextSymbol = string.sub(M.text, M.position + 1, M.position + 1)
+    if M.symbolIsNewLine(nextSymbol) then
+      break
+    end
+    M.nextSymbol()
+  end
+  local result = token_types.createToken(token_types.SPECIAL_TARGET_NAME, text:gsub("%s+", ""), row, column)
+  if command then
+    result.command = string.gsub(command, "^%s*(.-)%s*$", "%1")
+    -- result.command = command
+  else
+    result.command = ""
+  end
+  return result
 end
 
 return M
