@@ -150,6 +150,7 @@ function M.readSpecialTargetName()
     if isName then
       if M.getCurrentSymbol() == ':' or M.getCurrentSymbol() == '=' then
         isName = false
+        M.nextSymbol()
       else
         text = text .. M.getCurrentSymbol();
       end
@@ -200,6 +201,7 @@ function M.readTarget()
     if isName then
       if M.getCurrentSymbol() == ':' then
         isName = false
+        M.nextSymbol()
       else
         text = text .. M.getCurrentSymbol();
       end
@@ -248,6 +250,7 @@ function M.readVariable()
     if isName then
       if M.getCurrentSymbol() == '=' then
         isName = false
+        M.nextSymbol()
       else
         text = text .. M.getCurrentSymbol();
       end

@@ -44,4 +44,15 @@ function testSimple()
   lu.assertEquals(result[10].value, "@$(DOCKER_COMP) build --pull --no-cache")
 end
 
+function testHard()
+  local text   = require('tests.file').getText()
+  local result = linter.parse(text)
+
+  lu.assertEquals(result[1].type, token_types.COMMENT)
+  lu.assertEquals(result[1].value, " Executables (local)")
+
+  lu.assertEquals(result[2].type, token_types.VARIABLE)
+  lu.assertEquals(result[2].value, "DOCKER_COMP")
+end
+
 os.exit(lu.LuaUnit.run())
