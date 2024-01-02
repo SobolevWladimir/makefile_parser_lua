@@ -1,8 +1,9 @@
 local M = {
-  COMMENT       = 'comment',
+  TARGET        = 'target',
   COMMAND       = 'command',
   PREREQUISITES = 'prerequisites',
-  RECIPE        = 'recipe'
+  RECIPE        = 'recipe',
+  VARIABLE      = 'variable'
 }
 
 function M.createToken(type, value, row, column)
