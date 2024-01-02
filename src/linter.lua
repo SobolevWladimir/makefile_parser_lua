@@ -7,8 +7,8 @@ local M = {
 
 function M.parse(test)
   for i = 0, 10 do
-    print('i:');
-    print(i)
+    print('test:');
+    print(tostring(i), ":", test:sub(i, i))
   end
 end
 
