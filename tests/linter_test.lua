@@ -1,4 +1,21 @@
 local linter = require('src.linter');
 
+local text   = require('tests.file').getTextSimple()
 
-linter.parse('test for my code')
+local result = linter.parse(text)
+
+
+function dump(o)
+  if type(o) == 'table' then
+    local s = '{ '
+    for k, v in pairs(o) do
+      if type(k) ~= 'number' then k = '"' .. k .. '"' end
+      s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
+    end
+    return s .. '} '
+  else
+    return tostring(o)
+  end
+end
+
+print(dump(result))
