@@ -33,8 +33,14 @@ function testSimple()
   lu.assertEquals(result[2].type, token_types.COMMENT)
   lu.assertEquals(result[2].value, "# Builds the Docker images")
 
-  lu.assertEquals(result[3].type, token_types.COMMENT)
-  lu.assertEquals(result[3].value, "# Builds the Docker")
+  lu.assertEquals(result[3].type, token_types.RECIPE)
+  lu.assertEquals(result[3].value, "@$(DOCKER_COMP) build")
+
+  lu.assertEquals(result[4].type, token_types.COMMENT)
+  lu.assertEquals(result[4].value, "# Builds the Docker")
+
+  lu.assertEquals(result[5].type, token_types.RECIPE)
+  lu.assertEquals(result[5].value, "@$(DOCKER_COMP) build --pull --no-cache")
 end
 
 os.exit(lu.LuaUnit.run())

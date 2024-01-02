@@ -28,6 +28,10 @@ function M.readNext()
     if M.isComment() then
       return M.readComment();
     end
+
+    if M.isRecipe() then
+      return M.readRecipe()
+    end
     M.nextSymbol()
   end
   return nil;
@@ -87,6 +91,30 @@ function M.readComment()
     M.nextSymbol()
   end
   return token_types.createToken(token_types.COMMENT, text, row, column)
+end
+
+function M.isRecipe()
+  local currentSymbol = M.getCurrentSymbol();
+  if currentSymbol == '	' then
+    return true;
+  end
+  return false
+end
+
+function M.readRecipe()
+  M.nextSymbol();
+  local row    = M.row
+  local column = M.column
+  local text   = ""
+  while not M.isEnd() do
+    text = text .. M.getCurrentSymbol();
+    local nextSymbol = string.sub(M.text, M.position + 1, M.position + 1)
+    if M.symbolIsNewLine(nextSymbol) then
+      break
+    end
+    M.nextSymbol()
+  end
+  return token_types.createToken(token_types.RECIPE, text, row, column)
 end
 
 return M
