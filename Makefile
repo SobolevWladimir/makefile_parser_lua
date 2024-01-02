@@ -10,10 +10,6 @@ ROOT_LUAS= src/logging.lua
 
 
 test:
-	lua tests.lua
-
-testtwo:
 	lua tests/linter_test.lua
+	lua tests/parser_test.lua
 
-lint:
-	luacheck .
