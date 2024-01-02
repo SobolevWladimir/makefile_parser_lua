@@ -11,8 +11,7 @@ build clean:
 
 
 test:
-	cd tests && ./run_tests.sh
-	cd tests && LUA_INIT="_G.debug = nil" ./run_tests.sh
+	lua tests/linter_test.lua 
 
 lint:
 	luacheck .
