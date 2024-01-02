@@ -1,21 +1,40 @@
 local linter = require('src.linter');
+local token_types = require('src.token_types')
 
-local text   = require('tests.file').getTextSimple()
 
+lu = require('luaunit')
+
+-- function dump(o)
+--   if type(o) == 'table' then
+--     local s = '{ '
+--     for k, v in pairs(o) do
+--       if type(k) ~= 'number' then k = '"' .. k .. '"' end
+--       s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
+--     end
+--     return s .. '} '
+--   else
+--     return tostring(o)
+--   end
+-- end
+
+local text = require('tests.file').getTextSimple()
 local result = linter.parse(text)
 
 
-function dump(o)
-  if type(o) == 'table' then
-    local s = '{ '
-    for k, v in pairs(o) do
-      if type(k) ~= 'number' then k = '"' .. k .. '"' end
-      s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
-    end
-    return s .. '} '
-  else
-    return tostring(o)
-  end
+function testSimple()
+  local text   = require('tests.file').getTextSimple()
+  local result = linter.parse(text)
+
+
+
+  lu.assertEquals(result[1].type, token_types.COMMENT)
+  lu.assertEquals(result[1].value, "# —— Docker 🐳 ————————————————————————————————————————————————————————————————")
+
+  lu.assertEquals(result[2].type, token_types.COMMENT)
+  lu.assertEquals(result[2].value, "# Builds the Docker images")
+
+  lu.assertEquals(result[3].type, token_types.COMMENT)
+  lu.assertEquals(result[3].value, "# Builds the Docker")
 end
 
-print(dump(result))
+os.exit(lu.LuaUnit.run())

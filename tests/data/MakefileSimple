@@ -2,6 +2,6 @@
 build: ## Builds the Docker images
 	@$(DOCKER_COMP) build
 
-build-cache: ## Builds the Docker images
+build-cache: ## Builds the Docker
 	@$(DOCKER_COMP) build --pull --no-cache
 

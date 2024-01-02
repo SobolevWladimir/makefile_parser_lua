@@ -1,3 +1,4 @@
+local token_types = require "src.token_types"
 local M = {
   position = 0,
   column = 0,
@@ -19,14 +20,14 @@ function M.parse(text)
       table.insert(result, value)
     end
   end
-  -- for i = 0, string.len(test) do
-  --   table.insert(result, test:sub(i, i));
-  -- end
   return result;
 end
 
 function M.readNext()
   while not M.isEnd() do
+    if M.isComment() then
+      return M.readComment();
+    end
     M.nextSymbol()
   end
   return nil;
@@ -46,14 +47,18 @@ end;
 
 function M.isNewLine()
   local currentSymbol = M.getCurrentSymbol();
-  if currentSymbol == "\n\r" or currentSymbol == "\n" or currentSymbol == "\r" then
+  return M.symbolIsNewLine(currentSymbol)
+end
+
+function M.symbolIsNewLine(currentSymbol)
+  if currentSymbol == '\n\r' or currentSymbol == '\n' or currentSymbol == '\r' then
     return true;
   end
   return false
 end
 
 function M.getCurrentSymbol()
-  return M.text.sub(M.position, M.position)
+  return string.sub(M.text, M.position, M.position)
 end;
 
 function M.isEnd()
@@ -66,6 +71,22 @@ function M.isComment()
     return true;
   end
   return false
+end
+
+function M.readComment()
+  M.nextSymbol();
+  local row    = M.row
+  local column = M.column
+  local text   = ""
+  while not M.isEnd() do
+    text = text .. M.getCurrentSymbol();
+    local nextSymbol = string.sub(M.text, M.position + 1, M.position + 1)
+    if M.symbolIsNewLine(nextSymbol) then
+      break
+    end
+    M.nextSymbol()
+  end
+  return token_types.createToken(token_types.COMMENT, text, row, column)
 end
 
 return M

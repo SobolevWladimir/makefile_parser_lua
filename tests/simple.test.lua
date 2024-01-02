@@ -1,4 +1,3 @@
-require('luaunit')
 lu = require('luaunit')
 function add(v1, v2)
   -- add positive numbers
