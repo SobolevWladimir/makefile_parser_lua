@@ -5,7 +5,9 @@ local M = {
   row = 0,
   text = "",
 }
-
+function M.trim(s)
+  return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
+end
 
 function M.parse(text)
   M.text       = text
@@ -35,6 +37,14 @@ function M.readNext()
 
     if M.isRecipe() then
       return M.readRecipe()
+    end
+
+    if M.isVariable() then
+      return M.readVariable()
+    end
+
+    if M.isTarget() then
+      return M.readTarget()
     end
     M.nextSymbol()
   end
@@ -155,9 +165,9 @@ function M.readSpecialTargetName()
     end
     M.nextSymbol()
   end
-  local result = token_types.createToken(token_types.SPECIAL_TARGET_NAME, text:gsub("%s+", ""), row, column)
+  local result = token_types.createToken(token_types.SPECIAL_TARGET_NAME, M.trim(text), row, column)
   if command then
-    result.command = string.gsub(command, "^%s*(.-)%s*$", "%1")
+    result.command = M.trim(command)
     -- result.command = command
   else
     result.command = ""
@@ -166,9 +176,10 @@ function M.readSpecialTargetName()
 end
 
 function M.isTarget()
-  local endPos = string.len(M.text) - M.position;
+  local endPos = string.len(M.text);
   for pos = M.position, endPos do
     local symbol = string.sub(M.text, pos, pos)
+    local symbolTest = string.sub(M.text, pos, pos + 5)
     if M.symbolIsNewLine(symbol) then
       return false
     end
@@ -204,9 +215,57 @@ function M.readTarget()
     end
     M.nextSymbol()
   end
-  local result = token_types.createToken(token_types.SPECIAL_TARGET_NAME, text:gsub("%s+", ""), row, column)
+  local result = token_types.createToken(token_types.TARGET, M.trim(text), row, column)
+  if prerequisites then
+    result.prerequisites = M.trim(prerequisites)
+  else
+    result.prerequisites = ""
+  end
+  return result
+end
+
+function M.isVariable()
+  local endPos = string.len(M.text);
+  for pos = M.position, endPos do
+    local symbol = string.sub(M.text, pos, pos)
+    if M.symbolIsNewLine(symbol) then
+      return false
+    end
+    if symbol == "=" then
+      return true
+    end
+  end
+  return false;
+end
+
+function M.readVariable()
+  local row     = M.row
+  local column  = M.column
+  local text    = ""
+  local isName  = true;
+  local command = "";
+  while not M.isEnd() do
+    if isName then
+      if M.getCurrentSymbol() == '=' then
+        isName = false
+      else
+        text = text .. M.getCurrentSymbol();
+      end
+    else
+      if M.isComment() then
+        break
+      end
+      command = command .. M.getCurrentSymbol()
+    end
+    local nextSymbol = string.sub(M.text, M.position + 1, M.position + 1)
+    if M.symbolIsNewLine(nextSymbol) then
+      break
+    end
+    M.nextSymbol()
+  end
+  local result = token_types.createToken(token_types.VARIABLE, M.trim(text), row, column)
   if command then
-    result.prerequisites = string.gsub(prerequisites, "^%s*(.-)%s*$", "%1")
+    result.command = M.trim(command)
   else
     result.command = ""
   end
